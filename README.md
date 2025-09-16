@@ -131,8 +131,8 @@ Pertama-tama saya membuat dan masuk ke direktori proyek `football-shop` melalui 
     def show_main(request):
         context = {
             'app_name': 'My Football Shop', 
-            'name': 'Tsaniya',      # Ganti dengan namamu
-            'class': 'PBP E'      # Ganti dengan kelasmu
+            'name': 'Tsaniya',   
+            'class': 'PBP E'   
         }
 
         return render(request, "main.html", context)
@@ -184,3 +184,46 @@ Framework java dijadikan permulaan pembelajaran karena memiliki banyak kelebihan
 **Apakah ada feedback untuk asisten dosen tutorial 1 yang telah kamu kerjakan sebelumnya?** 
 
 Sampai saat ini belum ada feedback yang mau saya sampaikan
+
+-----
+**Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?**
+Kita memerlukan data delivery untuk memungkinkan aplikasi atau platform yang berbeda saling berkomunikasi dan berbagi data. Contoh implementasi: Saat kita mencari jersey di aplikasi, aplikasi mengirim request ke server. Server membalas dengan daftar produk yang relevan dalam format json. Aplikasi kemudian mengubah data json ini menjadi tampilan daftar produk yang kita lihat di layar. Jadi, data delivery penting untuk komunikasi, sinkronisasi, dan pertukaran informasi antara bagian-bagian sistem atau platform.
+
+**Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?**
+Menurut saya yang jauh lebih baik adalah JSON karena sintaks JSON lebih padat, mudah dibaca, dan mudah ditulis. Sebaliknya, sintaks XML lebih panjang dan rinci. JSON menghasilkan ukuran file yang lebih kecil, sehingga transmisi datanya lebih cepat. XML, memiliki struktur yang lebih kompleks sehingga menghasilkan ukuran file yang memakan lebih banyak ruang. JSON lebih sederhana dan fleksibel dalam hal skema dokumentasi. JSON lebih aman daripada XML, karena XML memerlukan konfigurasi tambahan untuk mitigasi risiko keamanan.
+
+**Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?**
+is_valid() digunakan untuk memastikan semua data yang diisi sudah sesuai, contoh field harga harus angka. Is_valid() sangat dibutuhkan agar agar data yang masuk ke sistem terjamin aman dan sesuai format sebelum diproses (misalnya disimpan ke database).
+
+**Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?**
+CSRF token dibutuhkan untuk mencegah serangan CSRF. Serangan CSRF sendiri adalah pengguna dibuat seolah-olah meminta request tertentu pada website dan kemudian web akan mengeksekusi permintaan tersebut. CSRF token merupakan token unik untuk memastikan request benar-benar berasal dari pengguna yang benar, bukan dari pengguna lain.
+
+**Mengakses keempat URL di poin 2 menggunakan Postman, membuat screenshot dari hasil akses URL pada Postman, dan menambahkannya ke dalam README.md.**
+https://drive.google.com/file/d/1hdtlWKq6skRXmHaZuIi3wFNU1UFCW8es/view?usp=sharing
+
+-----
+**Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.**
+Pertama saya membuka `views.py` yang ada pada direktori main dan menambahkan import `HttpResponse` dan `Serializer` pada bagian atas. Lalu membuat fungsi baru dengan nama `show_xml` dan `show_json` yang keduanya berfungsi untuk mengambil seluruh data dari model `Product` menggunakan `Product.objects.all()`. Data query yang didapat kemudian diubah formatnya dengan fungsi `serializers.serialize()`, dengan format xml dan json. Hasil dari serialisasi kemudian di return sebagai sebuah `HttpResponse`, dengan content_type diatur ke application/xml atau application/json agar browser lain dapat menginterpretasikan data dengan benar.
+
+Selain itu, saya juga membuat fungsi berdasarkan id, yaitu `show_xml_by_id` dan `show_json_by_id`, yang menerima parameter id dari url. Di dalam kedua fungsi ini, data diambil dengan `Product.objects.filter(pk=id)`. Untuk mengantisipasi kondisi ketika data dengan product_id tertentu tidak ditemukan dalam basis data, saya menambahkan `try...except`. Jika terjadi Product.DoesNotExist, maka fungsi akan mengembalikan HttpResponse dengan status 404 sebagai tanda data tidak ada.
+
+**Membuat routing URL untuk masing-masing `views` yang telah ditambahkan pada poin 1.**
+Membuka `urls.py` yang ada pada direktori `main` dan import fungsi yang sudah dibuat sebelumnya, seperti  `show_xml`, `show_json`, serta `show_xml_by_id` dan `show_json_by_id`. Setelah diimpor, saya menambahkan path baru ke dalam urlpatterns.
+```python
+...
+path('xml/', show_xml, name='show_xml'),
+path('json/', show_json, name='show_json'),
+path('xml/<str:news_id>/', show_xml_by_id, name='show_xml_by_id'),
+path('json/<str:news_id>/', show_json_by_id, name='show_json_by_id')
+...
+```
+bagian <str:product_id> berfungsi untuk menangkap id dari URL dan meneruskannya sebagai parameter ke dalam fungsi view
+
+**Membuat halaman yang menampilkan data objek model yang memiliki tombol "Add" yang akan redirect ke halaman `form`, serta tombol "Detail" pada setiap data objek model yang akan menampilkan halaman detail objek.**
+Pada tahap ini, saya memodifikasi template `main.html` agar extends base.html dan menambahkan sebuah tombol yang mengarah ke halaman add product `{% url 'main:add_product' %}`. Di dalam template ini, saya membuat loop `{% for product in product_list %}` untuk menampilkan setiap item dari product_list. Masing-masing produk ditampilkan beserta informasi utamanya seperti nama, kategori, thumbnail, dan deskripsi singkat. Selain itu, saya menambahkan tombol "Detail" yang tautannya dibuat untuk setiap produk menggunakan product.id, yang akan mengarahkan pengguna ke halaman detail spesifik produk tersebut. Terdapat juga kondisi jika product_list kosong, di mana sebuah pesan akan ditampilkan untuk memberitahu bahwa belum ada produk yang tersedia
+
+**Membuat halaman form untuk menambahkan objek model pada app sebelumnya.**
+Untuk membuat halaman form, pertama membuat berkas `main.form.py`. Di dalamnya saya membuat class `ProductForm` yang mewarisi `ModelForm`, yang secara otomatis menghasilkan field-field form berdasarkan model `Product` yang telah ditentukan. Selanjutnya pada views.py saya membuat fungsi `add_product` yang bertujuan untuk menampilkan halaman dengan form kosong saat menerima request GET, dan akan memvalidasi serta menyimpan data yang dikirim saat menerima request POST menggunakan `form.is_valid()` dan `form.save()`, sebelum akhirnya kembali ke halaman utama. Tampilan dari form saya buat dalam template `add_product.html`, yang berisi tag <form> dengan method "POST" menyertakan {% csrf_token %} untuk keamanan, dan merender field form dengan {{ form.as_table }}. Terakhir, agar halaman form ini dapat diakses, saya menambahkan path('add-product/', ...) pada urls.py yang menghubungkan URL tersebut ke fungsi add_product.
+
+**Membuat halaman yang menampilkan detail dari setiap data objek model.**
+Untuk membuat halaman detail setiap produk, pertama saya membuat fungsi view baru bernama detail_product di views.py yang menerima parameter id. Fungsi ini menggunakan get_object_or_404 untuk mengambil satu objek Product berdasarkan id-nya, di mana jika objek tidak ditemukan akan otomatis menampilkan halaman 404. Objek yang berhasil diambil kemudian dikirimkan ke sebuah template baru, detail_product.html, yang dibuat untuk menampilkan semua atribut detail dari produk tersebut seperti nama produk dan deskripsi. Agar halaman ini dapat diakses, saya menambahkan sebuah path baru di urls.py dengan pola 'product/<str:id>/', yang berfungsi menangkap id dari URL dan menghubungkannya ke fungsi detail_product.
