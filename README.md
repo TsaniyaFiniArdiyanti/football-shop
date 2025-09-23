@@ -239,3 +239,54 @@ Untuk membuat halaman form, pertama membuat berkas `main.form.py`. Di dalamnya s
 
 Untuk membuat halaman detail setiap produk, pertama saya membuat fungsi view baru bernama detail_product di views.py yang menerima parameter id. Fungsi ini menggunakan get_object_or_404 untuk mengambil satu objek Product berdasarkan id-nya, di mana jika objek tidak ditemukan akan otomatis menampilkan halaman 404. Objek yang berhasil diambil kemudian dikirimkan ke sebuah template baru, detail_product.html, yang dibuat untuk menampilkan semua atribut detail dari produk tersebut seperti nama produk dan deskripsi. Agar halaman ini dapat diakses, saya menambahkan sebuah path baru di urls.py dengan pola 'product/<str:id>/', yang berfungsi menangkap id dari URL dan menghubungkannya ke fungsi detail_product.
 </details>
+
+<details>
+<summary>Tugas individu 4: Implementasi Autentikasi, Session, dan Cookies pada Djangoo</summary>
+
+**Apa itu Django `AuthenticationForm`? Jelaskan juga kelebihan dan kekurangannya.**
+
+Django AuthenticationForm adalah sebuah form class atau formulir bawaan django yang khusus dirancang untuk menangani proses autentikasi pengguna seperti login. Tugas utamanya adalah memverifikasi kredensial yang dimasukkan pengguna (biasanya username dan password) terhadap database pengguna yang terdaftar.
+
+Dalam arsitektur MVT django, form ini berperan sebagai perantara antara Template (tampilan login) dan Model (User model). AuthenticationForm menangani validasi, menampilkan error, dan jika kredensial valid, form ini memberikan Anda objek User yang dapat log in ke dalam sistem.
+
+Kelebihan: mempercepat waktu development dan mudah digunakan karena tidak perlu membuat form dari awal. Memiliki keamanan yang bagus (Sudah support CSRF protection). Terintegrasi penuh dengan sistem auth django, mudah diintegrasikan dengan fitur-fitur otentikasi django lainnya. Bisa dikustomisasi (mengubah field atau menyesuaikan validasi).
+
+Kekurangan: Walau bisa dikustomisasi mungkin kita butuh usaha yang lebih ekstra, secara default form dirancang untuk login menggunakan username dan password, jika ingin menggunakan email atau nomor telepon, butuh kustomisasi lebih lanjut. Tampilannya sederhana, jika ingin styling lebih lanjut bisa memakai CSS. 
+
+**Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?**
+
+Autentikasi adalah proses verifikasi identitas. Otorisasi adalah proses menentukan hak akses atau izin yang diiliki setelah identitas terverifikasi. Django mengimplementasikan autentikasi melalui sistem terintegrasi yang mencakup Model User untuk menyimpan kredensial (username dan password), AuthenticationForm untuk validasi login, views bawaan seperti `login()` untuk mengelola sesi, dan AuthenticationMiddleware yang secara otomatis melampirkan objek pengguna yang terautentikasi ke `request.user` di setiap request, memungkinkan pengecekan status login dengan mudah di seluruh aplikasi. Untuk otorisasi django mengaturnya dengan sistem Permissions yang memberikan izin dasar (tambah, ubah, hapus, lihat) untuk setiap model secara otomatis, Groups untuk mengelompokkan pengguna dan menetapkan izin secara kolektif, serta Decorators dan Mixins yang membatasi akses ke view berdasarkan status login atau izin spesifik pengguna, memastikan hanya pengguna yang berwenang yang dapat melakukan tindakan tertentu. 
+
+**Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?**
+
+Kelebihan session jauh lebih aman, data disimpan di server, bukan di browser. Jika ID dicuri, datanya tetap aman di server dan sulit ditembus. Karena data ada di server, penyimpanan data jauh lebih besar dan kompleks dibandingkan cookies. Pengguna tidak bisa melihat atau mengubah data session secara langsung karena semuanya ada di server. Kekurangan session adalah memakan memori di server ketika pengguna aktif. Jika ada banyak orang yang mengakses, akan menjadi masalah performa dan skalabilitas. Walau data di server, cara kerja session secara default tetap bergantung pada cookie untuk menyimpan session ID.
+
+Kelebihan cookies terletak pada sifatnya yang client-side, dimana data sepenuhnya disimpan di browser pengguna sehingga tidak membebani memori server. Selain itu, implementasi cookies sederhana tanpa memerlukan logika server yang rumit, dan cookies dapat diatur untuk bertahan dalam waktu lama sehingga cocok untuk fitur "Ingat Saya". Namun, kekurangannya adalah keamanan yang rendah karena data rentan dicuri atau dimanipulasi, kapasitas penyimpanan yang terbatas, dan ketergantungan pada pengaturan browser yang memungkinkan pengguna memblokir atau menghapus cookies sehingga berpotensi menganggu fungsionalitas aplikasi.
+
+**Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?**
+
+Tidak, cookies secara default tidak aman dalam pengembangan web karena sifatnya yang terbuka, isinya berupa teks yang disimpan di browser dan dikirim otomatis ke server pada setiap request. Risiko utama yang muncul antara lain serangan Cross-Site Scripting (XSS) yang mencuri cookies sesi, Cross-Site Request Forgery (CSRF) yang memanfaatkan cookies login untuk melakukan aksi tanpa izin pengguna, serta Session Hijacking melalui packet sniffing pada jaringan tidak aman jika tanpa HTTPS.
+Django mengatasi risiko ini melalui beberapa lapisan pertahanan. Framework ini secara otomatis menerapkan CSRF Middleware yang memerlukan token unik untuk setiap permintaan POST, template auto-escaping untuk mencegah XSS, serta pengaturan cookie atribut keamanan seperti HTTPONLY (memblokir akses JavaScript), SECURE (hanya mengizinkan HTTPS), dan SAMESITE (membatasi pengiriman cookie lintas situs).
+
+------
+**Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna mengakses aplikasi sebelumnya sesuai dengan status login/logoutnya.**
+
+Proses untuk implementasi proses registrasi dan login memiliki langkah-langkah yang kurang lebih sama. Pertama saya membuat fungsi view di `views.py` untuk menangani request `GET` yang menampilkan formulir dan `POST` untuk memproses data yang dikirim. Saya menggunakan form bawaan django `UserCreationForm` untuk page registrasi dan `AuthenticationForm` untuk halaman login. Di dalam view, setelah data `POST` divalidasi dengan `form.is_valid()`, di registrasi akan memanggil `form.save()` untuk membuat user baru, sedangkan login menggunakan authenticate dan login untuk memverifikasi username dan password, serta membuat sesi pengguna. Setiap fungsi ini kemudian dihubungkan ke template HTML masing-masing, misal `register.html` dan `login.html`, lalu menambahkan path nya di `urls.py` agar dapat diakses melalui URL yang spesifik. 
+
+Untuk log out, saya membuat fungsi `logout_user` di `views.py` yang mengimpor dan memanggil fungsi `logout(request)` bawaan django yang berfungsi untuk menghapus sesi pengguna yang sedang aktif. Setelah itu pengguna diarahkan kembali ke halaman login. Untuk mengaktifkan fungsi ini adalah dengan tombol atau tautan di halaman lain seperti `main.html` yang terhubung dengan path URL log out di `urls.py`.
+
+Terakhir untuk merestriksi akses halaman Main dan Product Detail saya menggunakan decorator `@login_required(login_url='/login/')`. Decorator ini ditambahkan tepat di atas fungsi yang ingin di restriksi. Hasilnya, jika ada pengguna yang belum log in mencoba untuk mengakses halaman tersebut, mereka akan secara otomatis dialihkan ke halaman login terlebih dahulu, memastikan bahwa hanya pengguna terautentikasi yang dapat mengaksesnya.
+
+**Membuat dua (2) akun pengguna dengan masing-masing tiga (3) dummy data menggunakan model yang telah dibuat sebelumnya untuk setiap akun di lokal.**
+
+Pertama saya menjalankan `python manage.py runserver` di terminal, lalu membuka web di lokal. Saya membuka halaman registrasi dan membuat 2 akun baru. Saya log in menggunakan akun pertama, lalu menggunakan form "Add Product" untuk menambahkan tiga produk. Selanjutnya, saya log out, lalu log in dengan akun kedua, dan menambahkan tiga produk lagi.
+
+**Menghubungkan model `Product` dengan `User`.**
+
+Di models.py yang ada pada direktori main saya menambahkan `ForeignKey` ke `User`. `ForeignKey` membuat relasi satu-ke-banyak (satu user bisa mempunyai banyak `Product`). `on_delete=models.CASCADE` berarti jika seorang `User` dihapus, semua `Product` milik `User` juga akan ikut terhapus. Setelah itu saya melakukan Migrasi. Selanjutnya, pada `add_product` di `views.py` disesuaikan agar setiap produk baru terasosiasi dengan pengguna yang sedang log in, agar bisa terasosiasi saya menggunakan `form.save(commit=False)` untuk menunda penyimpanan, lalu mengisi field `user` dengan `request.user` sebelum akhirnya menyimpan objek ke database. pada `show_main`, query diubah dari `Product.objects.all()` menjadi `Product.objects.filter(user=request.user)` agar secara default hanya menampilkan produk milik pengguna yang sedang aktif. Terakhir, di template `main.html` ditambahkan tombol untuk memfilter produk dan pada template detail produk ditampilkan nama pembuatnya melalui `{{ product.user.username }}` untuk memverifikasi bahwa relasi antar model telah berhasil dibuat.
+
+**Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti `last_login` pada halaman utama aplikasi.**
+
+Pada fungsi `login_user` di `views.py`, setelah pengguna berhasil diautentikasi, sebuah cookie `last_login` dibuat dan diatur dengan timestamp saat itu juga menggunakan `response.set_cookie('last_login', str(datetime.datetime.now()))` pada response (objek `HttpResponseRedirect`) sebelum dikirim ke pengguna. Selanjutnya, untuk menampilkan informasi, fungsi `show_main` akan mengambil nilai cookie tersebut dari objek `request` menggunakan `request.COOKIES.get('last_login', 'Never')` dan meneruskannya ke template `main.html`. Di dalam template, detail pengguna yang sedang log in seperti username nya user dan waktu login terakhir dari cookie `{{ last_login }}` ditampilkan. Terakhir, saat pengguna melakukan log out, fungsi `logout_user` tidak hanya menghapus sesi pengguna, tetapi juga menghapus cookie `last_login` dari browser dengan memanggil `response.delete_cookie('last_login')` sebelum mengarahkan pengguna kembali ke halaman login.
+
+</details>
