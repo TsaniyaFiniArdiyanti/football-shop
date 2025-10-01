@@ -1,66 +1,66 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Football Shop</title>
+{% endblock meta %}
+
 {% block content %}
-<h1>Football Shop</h1>
+{% include 'navbar.html' %}
+<div class="bg-gray-50 w-full pt-16 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-<h5>App Name: </h5>
-<p>{{ app_name }}<p>
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Football Shop</h1>
+      <p class="text-gray-600">Latest football products for your needs</p>
+    </div>
 
-<h5>Name:</h5>
-<p>{{ nama }}</p>
+    <!-- Filter Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4">
+      <div class="flex space-x-3 mb-4 sm:mb-0">
+        <a href="?" class="{% if not request.GET.filter or request.GET.filter == 'all' %}bg-blue-600 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors duration-200">
+          All Products
+        </a>
+        {% if user.is_authenticated %}
+        <a href="?filter=my" class="{% if request.GET.filter == 'my' %}bg-blue-600 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors duration-200">
+          My Products
+        </a>
+        {% endif %}
+      </div>
+      {% if user.is_authenticated %}
+        <div class="text-sm text-gray-500">
+          Last login: {{ user.last_login|date:"M d, Y H:i" }}
+        </div>
+      {% endif %}
+    </div>
 
-<h5>Class:</h5>
-<p>{{ class }}</p>
-
-<a href="{% url 'main:add_product' %}">
-    <button>+ Add New Product</button>
-</a>
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-
-<hr>
-
-<a href="?filter=all">
-    <button type="button">All Products</button>
-</a>
-<a href="?filter=my">
-    <button type="button">My Products</button>
-</a> 
-
-{% if not product_list %}
-<p>Belum ada data produk pada Football Shop</p>
-{% else %}
-
-{% for product in product_list %}
-<div>
-    <h2><a href="{% url 'main:detail_product' product.id %}">{{ product.name }}</a></h2>
-
-    <p><b>{{ product.get_category_display }}</b>{% if product.is_featured %} | 
-    <b>Featured</b>{% endif %}</p>
-
-    {% if product.thumbnail %}
-    <img src="{{ product.thumbnail }}" alt="thumbnail" height="100">
-    <br />
+    <!-- Products Grid -->
+    {% if not product_list %}
+      <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+        <div class="w-32 h-32 mx-auto mb-4 text-gray-400">
+          <img src="{% static 'image/no-product.png' %}" alt="No produtcs available" class="w-full h-full object-contain">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+        <p class="text-gray-500 mb-6">Be the first to add football products to our shop.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+          Add Product
+        </a>
+        {% else %}
+        <a href="{% url 'main:login' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+          Login to Add Product
+        </a>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in product_list %}
+          {% include 'card_product.html' with product=product %}
+        {% endfor %}
+      </div>
     {% endif %}
-
-    <p>{{ product.description|truncatewords:25 }}...</p>
-
-    <p><b>
-        Rp {{ product.price|floatformat:0 }}
-    </b></p>
-
-    <p><a href="{% url 'main:detail_product' product.id %}"><button>Detail</button></a></p>
-
-    
+  </div>
 </div>
-
-<hr>
-
-{% endfor %}
-
-{% endif %}
-
 {% endblock content %}

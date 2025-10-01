@@ -15,22 +15,24 @@ from django.urls import reverse
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
-    filter_type = request.GET.get("filter", "all")  
-
-    if filter_type == "all":
-        product_list = Product.objects.all()
-    else:
-        product_list = Product.objects.filter(user=request.user)
-
+    products = Product.objects.all()
+    
+    # Filter by category
+    category_filter = request.GET.get('category')
+    if category_filter:
+        products = products.filter(category=category_filter)
+    
+    # Filter by user (My Products)
+    filter_type = request.GET.get('filter')
+    if filter_type == 'my' and request.user.is_authenticated:
+        products = products.filter(user=request.user)
+    
     context = {
-        'app_name': 'Football Shop', 
-        'nama': request.user.username,
-        'class': 'PBP E',
-        'product_list' : product_list,
-        'last_login': request.COOKIES.get('last_login', 'Never')
+        'product_list': products,
+        'name': request.user.username,
+        'last_login': request.session.get('last_login', 'Never'),
     }
-
-    return render(request, "main.html",context)
+    return render(request, 'main.html', context)
 
 def add_product(request):
     form = ProductForm(request.POST or None)
@@ -113,3 +115,21 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))

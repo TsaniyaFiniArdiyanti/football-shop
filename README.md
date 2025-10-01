@@ -290,3 +290,112 @@ Di models.py yang ada pada direktori main saya menambahkan `ForeignKey` ke `User
 Pada fungsi `login_user` di `views.py`, setelah pengguna berhasil diautentikasi, sebuah cookie `last_login` dibuat dan diatur dengan timestamp saat itu juga menggunakan `response.set_cookie('last_login', str(datetime.datetime.now()))` pada response (objek `HttpResponseRedirect`) sebelum dikirim ke pengguna. Selanjutnya, untuk menampilkan informasi, fungsi `show_main` akan mengambil nilai cookie tersebut dari objek `request` menggunakan `request.COOKIES.get('last_login', 'Never')` dan meneruskannya ke template `main.html`. Di dalam template, detail pengguna yang sedang log in seperti username nya user dan waktu login terakhir dari cookie `{{ last_login }}` ditampilkan. Terakhir, saat pengguna melakukan log out, fungsi `logout_user` tidak hanya menghapus sesi pengguna, tetapi juga menghapus cookie `last_login` dari browser dengan memanggil `response.delete_cookie('last_login')` sebelum mengarahkan pengguna kembali ke halaman login.
 
 </details>
+
+<details>
+<summary>Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS</summary>
+
+### Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+1.  Inline Style
+    
+    Contoh: <h1 style="color: white;">Judul</h1>
+    Style yang ditulis langsung pada atribut `style` pada elemen HTML. Ini adalah selector yang paling spesifik.
+
+2.  ID Selector
+    
+    Contoh: #judul-utama { color: blue; }
+    Menargetkan elemen berdasarkan id yang unik. Karena id harus unik dalam satu halaman, selector ini dianggap sangat spesifik.
+
+3.  Class, Pseudo-class, dan Attribute Selector
+
+    Contoh: 
+    Class: .highlight { color: green; },
+    Attribute: input[type="text"] { ... },
+    Pseudo-class: a:hover { ... }
+
+    Kelompok ini memiliki tingkat prioritas yang sama. 
+
+4.  Element (Tag) Selector
+
+    Contoh: h1, p, div
+
+    Ini adalah selector yang paling tidak spesifik karena menargetkan semua elemen dengan tag HTML yang sama. Aturan ini akan diterapkan jika tidak ada aturan lain yang lebih spesifik .
+
+5.  Universal Selector (* { ... }), combinator (+, >, ~), dan inheritance (pewarisan dari parent).
+    Paling rendah prioritasnya.
+
+### Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+Responsive design menjadi konsep yang penting karena bertujuan untuk menghasilkan tampilan web yang terlihat bagus dan mudah digunakan di seluruh jenis perangkat, mulai dari mobile, tablet, hingga dekstop. Tanpa responsive design, beberapa pengguna, misalnya pengguna mobile mungkin akan secara terpaksa untuk terus memperbesar (zoom) dan menggeser layar secara horizontal, yang akan membuat pengguna kesulitan. 
+
+Kompas.com sudah menerapkan responsive design. Saat dibuka di desktop, situs ini menampilkan layout multi-kolom dengan menu navigasi yang lengkap dan beberapa sidebar. Namun, saat dibuka di mobile, tampilannya secara otomatis berubah menjadi 1-2 kolom, menu navigasi disembunyikan di dalam tombol hamburger, ukuran teks menjadi lebih besar dan mudah dibaca, dan gambar menyesuaikan lebar layar. Perubahan tata letak ini memastikan konten tetap nyaman dibaca dan dinavigasi tanpa perlu di zoom.
+
+Salah satu web yang belum menerapkan responsive design adalah Space Jam yang dirilis tahun 1996. Web ini dibuat dengan lebar yang tetap untuk monitor komputer zaman dulu. Saat dibuka di mobile, yang muncul adalah versi miniatur dari seluruh halaman desktop. Teksnya menjadi sangat kecil sehingga tidak mungkin dibaca tanpa zoom. Pengguna harus memperbesar bagian tertentu, lalu menggeser layar ke kanan dan kiri untuk membaca satu kalimat, yang merupakan pengalaman pengguna yang sangat buruk. Ini menunjukkan bahwa situs tersebut tidak mampu beradaptasi dengan ukuran layar yang lebih kecil.
+
+### Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+1.  Margin: Merupakan ruang kosong yang berada di luar border. Properti ini digunakan untuk memberi jarak antar elemen HTML.
+    ```html
+    .elemen {
+        /* menerapkan 15px margin ke semua sisi */
+        margin: 15px;
+
+        /* atas & bawah 10px, kanan & kiri 20px */
+        margin: 10px 20px;
+
+        /* spesifik per sisi */
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    ```
+
+2.  Border: Adalah garis tepian yang membungkus padding dan konten. Kita bisa mengatur ketebalan, gaya (misalnya, solid atau putus-putus), dan warna dari garis ini.
+    ```html
+    .elemen {
+        /* 2px tebalnya, solid, warna hitam */
+        border: 2px solid black;
+
+        /* zpesifik di satu sisi saja */
+        border-bottom: 1px dotted #ccc;
+    }
+    ```
+
+3.  Padding: Merupakan ruang kosong yang berada di dalam border, yaitu di sekitar konten (seperti teks atau gambar). Properti ini digunakan untuk memberi ruang atau space bagi konten di dalam elemennya.
+    ```html
+    .elemen {
+        /* menerapkan 10px padding ke semua sisi */
+        padding: 10px;
+
+        /* atas & bawah 5px, kanan & kiri 15px */
+        padding: 5px 15px;
+
+        /* spesifik per sisi */
+        padding-left: 20px;
+    }
+    ```
+
+### Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+Flexbox digunakan untuk membuat tata letak secara satu dimensi, bisa kolom atau baris. Lebih cocok dipakai untuk mengatur alignment & distribusi ruang antar item di dalam sebuah container. Kegunaan: Sangat berguna untuk mengatur elemen-elemen di dalam komponen, seperti tombol-tombol di navigation bar.
+
+Grid digunakan untuk membuat tata letak secara dua dimensi, yaitu baris dan kolom sekaligus. Ini memungkinkan untuk membuat struktur halaman yang kompleks. Kegunaannya adalah Cocok untuk mendefinisikan struktur utama sebuah web, seperti header, sidebar, konten utama, dan footer, bisa juga untuk membuat sebuah daftar atau galeri yang berisi beberapa foto atau card produk.
+
+---------
+### Menjelaskan Checklist
+
+### Menambahkan Fitur Edit dan Delete pada Aplikasi
+Untuk menambahkan fitur edit, langkah pertama adalah membuat fungsi edit_product di views.py. Fungsi ini menerima id objek, mengambil data yang sudah ada menggunakan get_object_or_404, dan menampilkannya kembali dalam sebuah formulir dengan memberikan argumen instance=product saat inisialisasi ProductForm. Ketika formulir yang sudah diubah dikirim melalui POST, form.save() akan memperbarui data yang ada di database. Selanjutnya, dibuat template edit_product.html untuk menampilkan formulir tersebut, dan sebuah path URL dinamis ('product/<uuid:id>/edit') didaftarkan di urls.py. Terakhir, tombol "Edit" ditambahkan di main.html yang hanya muncul jika pengguna yang sedang login adalah pemilik dari item tersebut.
+
+Implementasi fitur delete lebih sederhana. Sebuah fungsi delete_product dibuat di views.py yang juga menerima id sebagai parameter. Fungsi ini akan mengambil objek yang sesuai, lalu langsung memanggil metode .delete() pada objek tersebut untuk menghapusnya dari basis data, dan kemudian mengarahkan pengguna kembali ke halaman utama. Sama seperti fitur Edit, sebuah path URL dinamis ('product/<uuid:id>/delete') ditambahkan di urls.py, dan tombol "Delete" juga ditambahkan di main.html yang hanya dapat diakses oleh pemilik sah item tersebut.
+
+### Kustomisasi halaman login, register, tambah product, edit product, dan detail product semenarik mungkin.
+Dalam melakukan kustomisasi desain saya mengimplementasikan Tailwind CSS sebagai framework utama. Pada login, register, dan form tambah produk saya membuat form card di tengah halaman menggunakan flexbox. Hal ini memungkinkan saya untuk menambah kelas-kelas tailwind secara spesisik pada setiap label dan input untuk mengatur lebar, padding, border, serta transisi efek. Saya juga memberikan styling untuk kondisi pesan error , seperti latar belakang merah.
+
+Untuk Detail produk saya menyajikan seluruh informasi pada sebuah card <article> dengan latar belakang putih. Di halaman card ini kontennya saya bagi menjadi beberapa bagian seperti header, thumbnail, harga, deskripsi, dan informasi toko di bagian bawah. Setiap bagian diberikan padding p-6 sm:p-8. Informasi penting seperti nama produk dibuat  dengan ukuran teks yang besar, sementara harga diberikan warna berbeda untuk menarik perhatian.
+
+### Kustomisasi halaman daftar product menjadi lebih menarik dan responsive
+Jika tidak ada produk tersimpan, halaman akan menampilkan sebuah pesan, dengan ikon PNG dan ada pesan ajakan untuk menambah produk. Jika terdapat produk data akan ditampilkan dalam format grid dengan kelas seperti `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`. Tata letak ini memastikan jumlah kolom kartu produk secara otomatis menyesuaikan lebar layar, mulai dari satu kolom di perangkat mobile hingga empat kolom di layar yang lebih besar. Desain untuk setiap produk individual dimuat dalam template terpisah card_product.html, yang kemudian dipanggil berulang kali menggunakan {% include %} untuk menjaga kode tetap rapi.
+
+### Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
+Untuk menambah tombol edit dan delete pada setiap card produk, saya menambahkan sebuah bagian khusus di bawah konten utama card. Kedua tombol ini berada dalam blok kondisional `{% if user.is_authenticated and product.user == user %}`. Logika ini memastikan bahwa tombol hanya akan muncul jika pengguna yang sedang melihat halaman sudah login dan merupakan pemilik sah dari produk tersebut, sehingga mencegah pengguna lain mengubah atau menghapus item yang bukan miliknya. Secara teknis, tombol-tombol ini adalah tautan (< a >) yang masing-masing mengarah ke URL edit_product dan delete_product, dengan menyertakan product.id untuk menargetkan data yang benar.
+
+### Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+Struktur navbar terdiri dari dua bagian utama pertama untuk tampilan desktop dan satu lagi untuk mobile. Dengan memanfaatkan kelas dari tailwind seperti md:hidden (sembunyikan di layar medium ke atas) dan hidden md:flex (sembunyikan di layar kecil, tampilkan sebagai flex di layar medium ke atas), saya dapat menampilkan menu horizontal yang lengkap di layar besar dan menyembunyikannya di layar kecil. Sebaliknya, di layar kecil, yang ditampilkan hanyalah sebuah tombol hamburger. Fungsionalitas toggle untuk menu mobile ini diimplementasikan menggunakan beberapa baris JavaScript sederhana yang mendeteksi klik pada tombol hamburger untuk menampilkan atau menyembunyikan menu navigasi. Selain itu, navbar ini juga ada tautan seperti "Login/Register" atau "Logout" yang akan menyesuaikan berdasarkan status autentikasi pengguna menggunakan template tag {% if user.is_authenticated %}.
+
+</details>
