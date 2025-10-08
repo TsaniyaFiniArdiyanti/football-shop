@@ -399,3 +399,23 @@ Untuk menambah tombol edit dan delete pada setiap card produk, saya menambahkan 
 Struktur navbar terdiri dari dua bagian utama pertama untuk tampilan desktop dan satu lagi untuk mobile. Dengan memanfaatkan kelas dari tailwind seperti md:hidden (sembunyikan di layar medium ke atas) dan hidden md:flex (sembunyikan di layar kecil, tampilkan sebagai flex di layar medium ke atas), saya dapat menampilkan menu horizontal yang lengkap di layar besar dan menyembunyikannya di layar kecil. Sebaliknya, di layar kecil, yang ditampilkan hanyalah sebuah tombol hamburger. Fungsionalitas toggle untuk menu mobile ini diimplementasikan menggunakan beberapa baris JavaScript sederhana yang mendeteksi klik pada tombol hamburger untuk menampilkan atau menyembunyikan menu navigasi. Selain itu, navbar ini juga ada tautan seperti "Login/Register" atau "Logout" yang akan menyesuaikan berdasarkan status autentikasi pengguna menggunakan template tag {% if user.is_authenticated %}.
 
 </details>
+
+<details>
+<summary>Tugas 6: Javascript dan AJAX</summary>
+
+### Apa perbedaan antara synchronous request dan asynchronous request?
+Secara sederhana, synchronous request itu "memblokir". Saat browser meminta data, pengguna harus menunggu sampai server merespons sepenuhnya, halaman akan seakan-akan berhenti dan tidak bisa melakukan apa pun. Sebaliknya, asynchronous request (yang digunakan AJAX) itu "tidak memblokir". Browser mengirim permintaan di latar belakang, jadi pengguna tetap bisa scroll, klik, dan berinteraksi dengan halaman sambil menunggu data datang. Ini membuat website terasa lebih cepat dan responsif.
+
+### Bagaimana AJAX bekerja di Django (alur request–response)?
+Alurnya adalah aksi pengguna (misalnya, klik tombol) memicu JavaScript untuk mengirim permintaan ke URL Django di latar belakang. View Django yang dituju akan memproses permintaan itu, lalu mengirim kembali data mentah yang ringan (biasanya format JSON), bukan seluruh halaman HTML. Setelah JavaScript menerima data JSON tersebut, ia akan langsung memperbarui bagian tertentu dari halaman—seperti mengubah angka like atau menampilkan pesan—tanpa perlu me-refresh halaman sama sekali.
+
+### Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?
+Keuntungan utamanya adalah pengalaman pengguna (UX) yang jauh lebih baik. Karena tidak ada refresh halaman yang mengganggu, interaksi terasa lebih mulus dan cepat, mirip aplikasi desktop. Selain itu, AJAX mengurangi beban server dan menghemat bandwidth karena hanya data-data kecil (JSON) yang dikirim, bukan seluruh file HTML yang berat setiap kali ada perubahan.
+
+### Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?
+Saat menggunakan AJAX untuk fitur sensitif, keamanan tetap menjadi yang utama. Pastikan selalu menggunakan HTTPS untuk mengenkripsi data. Selalu menyertakan CSRF token dalam setiap request POST dari JavaScript ke Django untuk mencegah serangan. Yang terpenting, selalu lakukan validasi di sisi server (Django), karena validasi di JavaScript bisa dengan mudah dilewati.
+
+### Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?
+AJAX secara drastis meningkatkan UX dengan membuat website terasa interaktif dan hidup. Fitur seperti infinite scroll, auto-complete di kolom pencarian, dan notifikasi real-time bisa terjadi berkat AJAX. Pengguna bisa mendapat umpan balik instan tanpa harus menunggu halaman dimuat ulang, sehingga alur interaksi tidak terputus dan website terasa lebih modern dan responsif.
+
+</details>
