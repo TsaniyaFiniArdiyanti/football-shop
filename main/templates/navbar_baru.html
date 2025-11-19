@@ -1,0 +1,54 @@
+{ % extends 'base.html' % }
+{% load static %}
+
+<head>
+    <title>Navbar</title>
+
+    <style>
+        body, h1 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar{
+            background-color: black;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            margin: 0;
+            size: 1.5rem;
+        }
+
+        .nav-links a:hover {
+            background-color: gray;
+            border-radius: 4px;
+        }
+
+        .logo h1 {
+            color: white;
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+
+        <div class="logo">
+            <h1>football shop</h1>
+        </div>
+
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Add Product</a>
+        </div>
+    </nav>
+</body>
